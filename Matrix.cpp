@@ -1,4 +1,4 @@
-#include "Matrix.h"
+﻿#include "Matrix.h"
 #include <iostream>
 #include <iomanip>
 using namespace std;
@@ -59,72 +59,122 @@ void Matrix::multiplyRow(double k, int row)
 	}
 	else cout << "k == 0 is not allowed!" << endl;
 }
-Matrix Matrix::findLadderMatrix()
+Matrix Matrix::findEchelonForm()
 {
 	Matrix matrix = *this;
-	int nonZero = 0;
-	int count_nonZero = 0;
-	for (int i = 0; i < ncols && i < nrows; i++)
+	int flag = 0; //flag = 1 nếu các phần tử cùng cột bên dưới mat[i][j] đều bằng 0, kể cả mat[i][j]
+	for (int i = 0, j = 0; i < nrows && j < ncols; i++, j++)
 	{
-		if (matrix.mat[i][i] == 0)
+		if (matrix.mat[i][j] == 0) //Tìm dòng có phần tử ở cột i khác 0 để swap 2 dòng
 		{
-			for (int k = i + 1; k < nrows; k++)
+			int k = 0;
+			for (k = i + 1; k < nrows; k++)
 			{
-				if (matrix.mat[k][i] != 0)
-
+				if (matrix.mat[k][j] != 0)
 				{
 					matrix.interchangeRows(i, k);
-					i--;
 					break;
 				}
 			}
+			if (k >= nrows) flag = 1;
 		}
-		else {
-			for (int j = i + 1; j < nrows; j++)
-			{
-				matrix.addRowstoRow(-matrix.mat[j][i] / matrix.mat[i][i], i, j);
-				matrix.print();
-				system("pause");
-				system("cls");
-			}
+		if (flag == 1)
+		{
+			--i;
+			flag = 0;
+			continue;
+		}
+		for (int h = i + 1; h < nrows; h++)  //Biến đổi các dòng bên dưới dòng i để các phần tử dưới cột j đều bằng 0
+		{
+			matrix.addRowstoRow(-matrix.mat[h][j] / matrix.mat[i][j], i, h);
 		}
 	}
-	for (int i = nrows - 1; i >= 0; i--)
+	return matrix;
+}
+Matrix Matrix::findReducedEchelonForm()
+{
+	Matrix matrix = *this;
+	int flag = 0; //flag = 1 nếu các phần tử cùng cột bên dưới mat[i][j] đều bằng 0, kể cả mat[i][j]
+	for (int i = 0, j = 0; i < nrows && j < ncols; i++, j++)
 	{
-		if (matrix.mat[i][ncols - 1] == 0) continue;
-		for (int j = 0; j < ncols; j++)
+		if (matrix.mat[i][j] == 0) //Tìm dòng có phần tử ở cột i khác 0 để swap 2 dòng
 		{
-			if (matrix.mat[i][j] != 0)
+			int k = 0;
+			for (k = i + 1; k < nrows; k++)
 			{
-				count_nonZero = ncols - j;
-				break;
+				if (matrix.mat[k][j] != 0)
+				{
+					matrix.interchangeRows(i, k);
+					break;
+				}
 			}
+			if (k >= nrows) flag = 1;
 		}
-		if (count_nonZero == nonZero)
+		if (flag == 1)
 		{
-			matrix.addRowstoRow(-matrix.mat[i + 1][ncols - 1] / matrix.mat[i][ncols - 1], i, i + 1);
+			--i;
+			flag = 0;
+			continue;
 		}
-		nonZero = count_nonZero;
-		count_nonZero = 0;
+		matrix.multiplyRow(1 / matrix.mat[i][j], i);
+		for (int h = i + 1; h < nrows; h++)  //Biến đổi các dòng bên dưới dòng i để các phần tử dưới cột j đều bằng 0
+		{
+			matrix.addRowstoRow(-matrix.mat[h][j] / matrix.mat[i][j], i, h);
+		}
 	}
-
 	return matrix;
 }
 double Matrix::findDeterminant()
 {
-	if (nrows == 2 && ncols == 2)
+	if (nrows == ncols)
 	{
-		return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
+		/*if (nrows == 2 && ncols == 2)
+		{
+			return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
+		}
+		double ans = 0;
+		for (int i = 0; i < ncols; i++)
+		{
+			Matrix b = submatrix(0, i);
+			ans += mat[0][i] * b.findDeterminant() * pow(-1, i);
+		}*/
+		double ans = 1;
+		Matrix matrix = *this;
+		int flag = 0; //flag = 1 nếu các phần tử cùng cột bên dưới mat[i][j] đều bằng 0, kể cả mat[i][j]
+		for (int i = 0, j = 0; i < nrows && j < ncols; i++, j++)
+		{
+			if (matrix.mat[i][j] == 0) //Tìm dòng có phần tử ở cột i khác 0 để swap 2 dòng
+			{
+				int k = 0;
+				for (k = i + 1; k < nrows; k++)
+				{
+					if (matrix.mat[k][j] != 0)
+					{
+						matrix.interchangeRows(i, k);
+						ans *= -1;
+						break;
+					}
+				}
+				if (k >= nrows) flag = 1;
+			}
+			if (flag == 1)
+			{
+				--i;
+				flag = 0;
+				continue;
+			}
+			for (int h = i + 1; h < nrows; h++)  //Biến đổi các dòng bên dưới dòng i để các phần tử dưới cột j đều bằng 0
+			{
+				matrix.addRowstoRow(-matrix.mat[h][j] / matrix.mat[i][j], i, h);
+			}
+		}
+		for (int i = 0; i < nrows; i++)
+			ans *= matrix.mat[i][i];
+		return ans;
 	}
-	double ans = 0;
-	for (int i = 0; i < ncols; i++)
-	{
-		Matrix b = cutRownCol(0, i);
-		ans += mat[0][i] * b.findDeterminant() * pow(-1, i);
-	}
-	return ans;
+	else cout << "Khong the tinh dinh thuc! Phai la ma tran vuong!" << endl;
 }
-Matrix Matrix::cutRownCol(int row, int col) {
+Matrix Matrix::submatrix(int row, int col) {
 	Matrix b(nrows - 1, ncols - 1, 0);
 	int h = 0;
 	int k = 0;
@@ -143,14 +193,14 @@ Matrix Matrix::cutRownCol(int row, int col) {
 }
 int Matrix::findRank()
 {
-	Matrix b = findLadderMatrix();
+	Matrix b = findEchelonForm();
 	int count = 0;
 	for (int i = 0, j = 0; i < nrows && j < ncols; i++, j++)
-	{
-		if (b.mat[i][j] != 0) count++;
+	{                         //Phần tử đầu tiên khác không chỉ nằm từ vị trí trên đường chéo chính sang bên phải
+		if (b.mat[i][j] != 0) count++; //Nếu phần tử trên đường chéo khác 0, cộng 1 vào kết quả
 		else
 		{
-			i--;
+			i--; //Nếu phần tử trên đường chéo chính bằng 0, tiến sang phần tử bên phải để kiểm tra
 		}
 	}
 
@@ -164,7 +214,142 @@ bool Matrix::isZeroRow(int row)
 	}
 	return true;
 }
+int Matrix::leadingEntryPos(int row)
+{
+	for (int i = 0; i < ncols; i++)
+	{
+		if (mat[row][i] != 0) return i;
+	}
+	return ncols;
+}
+Matrix Matrix::multiplyMatrix(Matrix other)
+{
+	Matrix ans(this->nrows, other.ncols, 0);
+	if (this->ncols == other.nrows) //Điều kiện để nhân hai ma trận
+	{
+		for (int i = 0; i < this->nrows; i++)
+		{
+			for (int j = 0; j < other.ncols; j++)
+			{
+				for (int k = 0; k < this->ncols; k++)
+				{
+					ans.mat[i][j] += this->mat[i][k] * other.mat[k][j];
+				}
+			}
+		}
+	}
+	cout << "Hai ma tran khong the nhan!" << endl;
+	return ans;
+}
+bool Matrix::isRevertible()
+{
+	return (this->findDeterminant() != 0);
+}
+Matrix Matrix::findReverse()
+{
+	if (this->isRevertible())
+	{
+		Matrix matrix = *this;
+		Matrix unit(nrows, ncols);
+		//int flag = 0; //flag = 1 nếu các phần tử cùng cột bên dưới mat[i][j] đều bằng 0, kể cả mat[i][j]
+		for (int i = 0, j = 0; i < nrows && j < ncols; i++, j++)
+		{
+			if (matrix.mat[i][j] == 0) //Tìm dòng có phần tử ở cột i khác 0 để swap 2 dòng
+			{
+				int k = 0;
+				for (k = i + 1; k < nrows; k++)
+				{
+					if (matrix.mat[k][j] != 0) //Đổi chỗ 2 dòng
+					{
+						unit.interchangeRows(i, k);
+						matrix.interchangeRows(i, k);
+						break;
+					}
+				}
+				//if (k >= nrows) flag = 1;
+			}
+			/*if (flag == 1)
+			{
+				--i;
+				flag = 0;
+				continue;
+			}*/
+			unit.multiplyRow(1 / matrix.mat[i][j], i);
+			matrix.multiplyRow(1 / matrix.mat[i][j], i);  //Chia dòng i cho 1/mat[i][j] để mat[i][j] = 1
+			for (int h = i + 1; h < nrows; h++)  //Biến đổi các dòng bên dưới dòng i để các phần tử dưới cột j đều bằng 0
+			{
+				unit.addRowstoRow(-matrix.mat[h][j], i, h);
+				matrix.addRowstoRow(-matrix.mat[h][j], i, h);
+			}
+		}
+		for (int i = nrows - 1, j = ncols - 1; i >= 0 && j >= 0; i--, j--)
+		{
+			for (int k = i - 1; k >= 0; k--)
+			{
+				unit.addRowstoRow(-matrix.mat[k][j], i, k);
+				matrix.addRowstoRow(-matrix.mat[k][j], i, k);  //Dòng k = -mat[k][j] * dòng i, để mat[k][j] = 0
+			}
+		}
+		return unit;
+	}
+	else
+	{
+		cout << "Ma tran khong kha ngich!" << endl;
+		return *this;
+	}
+}
+void Matrix::solveLinearEquation(Matrix a)
+{
+	Matrix matrix = a.findReducedEchelonForm();
+	double* ans = new double[a.ncols];
+	int numSol = a
+.ncols - 2;
+	for (int i = matrix.nrows - 1; i >= 0; i--)
+	{
+		if (matrix.isZeroRow(i))
+		{
+			cout << "Infinite soluntion." << endl;
+			return;
+		}
+		if (matrix.leadingEntryPos(i) == (matrix.ncols - 1))
+		{
+			cout << "No solution." << endl;
+			return;
+		}
+		ans[numSol] = matrix.mat[i][a.ncols - 1];
+		for (int j = matrix.ncols - 2; j > numSol; j--)
+		{
+			ans[numSol] -= (matrix.mat[i][j] * ans[j]);
+		}
+		ans[numSol] /= matrix.mat[i][numSol];
+		numSol--;
+	}
+	for (int i = 0; i <= a.ncols - 2; i++)
+	{
+		cout << "x" << i + 1 << " = " << ans[i] << endl;
+	}
+}
 
+double* Matrix::operator[](int i)
+{
+	if (i < nrows) return mat[i];
+}
+
+Matrix::Matrix(int nrows, int ncols)
+{
+	this->nrows = nrows;
+	this->ncols = ncols;
+	this->mat = new double*[this->nrows];
+	for (int i = 0; i < nrows; i++)
+	{
+		this->mat[i] = new double[this->ncols];
+		for (int j = 0; j < ncols; j++)
+		{
+			if (j == i) mat[i][j] = 1;
+			else mat[i][j] = 0;
+		}
+	}
+}
 Matrix::Matrix()
 {
 	nrows = 2;
