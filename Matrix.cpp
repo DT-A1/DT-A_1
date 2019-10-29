@@ -1,6 +1,7 @@
 ﻿#include "Matrix.h"
 #include <iostream>
 #include <iomanip>
+#include <cmath>
 using namespace std;
 
 
@@ -21,13 +22,45 @@ void Matrix::input()
 		}
 	}
 }
+void Matrix::inputEquations()
+{
+	cout << "Nhap so phuong trinh: ";
+	cin >> nrows;
+	cout << "Nhap so an: ";
+	cin >> ncols;
+	for (int i = 0; i < nrows; i++)
+	{
+		for (int j = 0; j < ncols; j++)
+		{
+			cout << "a" << i + 1 << j + 1 << "*x" << j + 1 << " ";
+			if (j != ncols - 1) cout << "+ ";
+		}
+		cout << "= b" << i + 1 << endl;
+	}
+	mat = new double*[nrows];
+	cout << "Nhap vao dang ma tran hoa của he phuong trinh: " << endl;
+	for (int i = 0; i < nrows; i++)
+	{
+		mat[i] = new double[ncols + 1];
+		for (int j = 0; j < ncols; j++)
+		{
+			cout << "Nhap a" << i + 1 << j + 1 << ": ";
+			cin >> mat[i][j];
+		}
+		cout << "Nhap b" << i + 1 << ": ";
+		cin >> mat[i][ncols];
+	}
+	++ncols; //Thêm 1 cột để chứa vế phải của phương trình
+}
 void Matrix::print()
 {
 	for (int i = 0; i < nrows; i++)
 	{
 		for (int j = 0; j < ncols; j++)
 		{
-			cout << setw(10) << mat[i][j];
+			cout << setw(10);
+			if (fabs(mat[i][j]) < 1e-8) cout << 0;
+			else cout << mat[i][j];
 		}
 		cout << endl;
 	}
@@ -65,20 +98,20 @@ Matrix Matrix::findEchelonForm()
 	int flag = 0; //flag = 1 nếu các phần tử cùng cột bên dưới mat[i][j] đều bằng 0, kể cả mat[i][j]
 	for (int i = 0, j = 0; i < nrows && j < ncols; i++, j++)
 	{
-		if (matrix.mat[i][j] == 0) //Tìm dòng có phần tử ở cột i khác 0 để swap 2 dòng
+		if (matrix.mat[i][j] == 0) //Tìm dòng có phần tử ở cột i khác 0 để hoán vị 2 dòng
 		{
 			int k = 0;
 			for (k = i + 1; k < nrows; k++)
 			{
 				if (matrix.mat[k][j] != 0)
 				{
-					matrix.interchangeRows(i, k);
+					matrix.interchangeRows(i, k); //Đổi vị trí hai dòng
 					break;
 				}
 			}
 			if (k >= nrows) flag = 1;
 		}
-		if (flag == 1)
+		if (flag == 1) //Nếu flag = 1, dời sang cột bên phải
 		{
 			--i;
 			flag = 0;
@@ -116,7 +149,7 @@ Matrix Matrix::findReducedEchelonForm()
 			flag = 0;
 			continue;
 		}
-		matrix.multiplyRow(1 / matrix.mat[i][j], i);
+		matrix.multiplyRow(1 / matrix.mat[i][j], i); //Biến đổi dòng để phần tử cơ sở bằng 1
 		for (int h = i + 1; h < nrows; h++)  //Biến đổi các dòng bên dưới dòng i để các phần tử dưới cột j đều bằng 0
 		{
 			matrix.addRowstoRow(-matrix.mat[h][j] / matrix.mat[i][j], i, h);
@@ -128,17 +161,7 @@ double Matrix::findDeterminant()
 {
 	if (nrows == ncols)
 	{
-		/*if (nrows == 2 && ncols == 2)
-		{
-			return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
-		}
-		double ans = 0;
-		for (int i = 0; i < ncols; i++)
-		{
-			Matrix b = submatrix(0, i);
-			ans += mat[0][i] * b.findDeterminant() * pow(-1, i);
-		}*/
-		double ans = 1;
+		double ans = 1; //Khởi tạo biến chứa kết quả
 		Matrix matrix = *this;
 		int flag = 0; //flag = 1 nếu các phần tử cùng cột bên dưới mat[i][j] đều bằng 0, kể cả mat[i][j]
 		for (int i = 0, j = 0; i < nrows && j < ncols; i++, j++)
@@ -151,7 +174,7 @@ double Matrix::findDeterminant()
 					if (matrix.mat[k][j] != 0)
 					{
 						matrix.interchangeRows(i, k);
-						ans *= -1;
+						ans *= -1; //Khi hoán vị 2 dòng thi det(newA) = -det(A)
 						break;
 					}
 				}
@@ -169,7 +192,7 @@ double Matrix::findDeterminant()
 			}
 		}
 		for (int i = 0; i < nrows; i++)
-			ans *= matrix.mat[i][i];
+			ans *= matrix.mat[i][i]; //det của ma trận bậc thang bằng tích các phần tử trên đường chéo chính
 		return ans;
 	}
 	else cout << "Khong the tinh dinh thuc! Phai la ma tran vuong!" << endl;
@@ -224,9 +247,9 @@ int Matrix::leadingEntryPos(int row)
 }
 Matrix Matrix::multiplyMatrix(Matrix other)
 {
-	Matrix ans(this->nrows, other.ncols, 0);
 	if (this->ncols == other.nrows) //Điều kiện để nhân hai ma trận
 	{
+		Matrix ans(this->nrows, other.ncols, 0);
 		for (int i = 0; i < this->nrows; i++)
 		{
 			for (int j = 0; j < other.ncols; j++)
@@ -237,9 +260,11 @@ Matrix Matrix::multiplyMatrix(Matrix other)
 				}
 			}
 		}
+		return ans;
 	}
+	Matrix a(0, 0);
 	cout << "Hai ma tran khong the nhan!" << endl;
-	return ans;
+	return a;
 }
 bool Matrix::isRevertible()
 {
@@ -298,33 +323,34 @@ Matrix Matrix::findReverse()
 		return *this;
 	}
 }
-void Matrix::solveLinearEquation(Matrix a)
+void Matrix::solveLinearEquation()
 {
-	Matrix matrix = a.findReducedEchelonForm();
-	double* ans = new double[a.ncols];
-	int numSol = a
-.ncols - 2;
+	Matrix matrix;
+	matrix.inputEquations();
+	matrix = matrix.findReducedEchelonForm();
+	double* ans = new double[matrix.ncols];
+	int numSol = matrix.ncols - 2;
 	for (int i = matrix.nrows - 1; i >= 0; i--)
 	{
-		if (matrix.isZeroRow(i))
+		if (matrix.isZeroRow(i))  //Nếu có 1 dòng (0, 0, 0, ..., 0) thì hệ có vô số nghiệm
 		{
 			cout << "Infinite soluntion." << endl;
 			return;
 		}
-		if (matrix.leadingEntryPos(i) == (matrix.ncols - 1))
+		if (matrix.leadingEntryPos(i) == (matrix.ncols - 1)) //Nếu có 1 dòng (0, 0, ..., 0, a) (a!=0) thì hệ vô nghiệm
 		{
 			cout << "No solution." << endl;
 			return;
 		}
-		ans[numSol] = matrix.mat[i][a.ncols - 1];
-		for (int j = matrix.ncols - 2; j > numSol; j--)
+		ans[numSol] = matrix.mat[i][matrix.ncols - 1];  //Nếu 2 trường hợp trên không xảy ra, hệ có nghiệm duy nhất
+		for (int j = matrix.ncols - 2; j > numSol; j--) //x(i) = b - a(n)*x(n) - a(n-1)*x(n-1) - ... - a(i+1)*x(i+1)
 		{
 			ans[numSol] -= (matrix.mat[i][j] * ans[j]);
 		}
 		ans[numSol] /= matrix.mat[i][numSol];
 		numSol--;
 	}
-	for (int i = 0; i <= a.ncols - 2; i++)
+	for (int i = 0; i <= matrix.ncols - 2; i++)
 	{
 		cout << "x" << i + 1 << " = " << ans[i] << endl;
 	}
@@ -386,7 +412,7 @@ Matrix::Matrix(int nrows, int ncols, int value)
 	for (int i = 0; i < nrows; i++)
 	{
 		this->mat[i] = new double[ncols];
-		for (int j = 0; j <= ncols; j++)
+		for (int j = 0; j < ncols; j++)
 		{
 			this->mat[i][j] = value;
 		}
