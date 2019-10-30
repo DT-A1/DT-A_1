@@ -6,7 +6,7 @@ int Vector::Length()
 }
 void Vector::input()
 {
-	cout << "Nhap chieu dai vector: ";
+	cout << "Nhap chieu dai vector : ";
 	cin >> length;
 	vec = new double[length];
 	for (int i = 0; i < length; i++)
@@ -19,25 +19,49 @@ void Vector::print()
 {
 	for (int i = 0; i < length; i++)
 	{
-		cout << setw(10) << vec[i];
+		cout << vec[i] << "\t";
 	}
 	cout << endl;
 }
 
-Vector Vector::operator+(const Vector& other)
+Vector Vector::addVector(const Vector& other)
 {
-	if (other.length != this->length) return *this;
-	Vector ans(this->length);
+	if (other.length != this->length)
+	{
+		Vector v(0);
+		cout << "\nDo dai 2 vector khac nhau nen khong the cong\n";
+		return v;
+	}
+	Vector ans;
 	for (int i = 0; i < length; i++)
 	{
 		ans.vec[i] = this->vec[i] + other.vec[i];
 	}
-
+	return ans;
+}
+Vector Vector::operator+(const Vector& other)
+{
+	if (other.length != this->length)
+	{
+		Vector v(0);
+		cout << "\nDo dai 2 vector khac nhau nen khong the cong\n";
+		return v;
+	}
+	Vector ans(length);
+	for (int i = 0; i < length; i++)
+	{
+		ans.vec[i] = this->vec[i] + other.vec[i];
+	}
 	return ans;
 }
 Vector& Vector::operator+=(const Vector& other)
 {
-	if (other.length != this->length) return *this;
+	if (other.length != this->length)
+	{
+		Vector v(0);
+		cout << "\nDo dai 2 vector khac nhau nen khong the cong\n";
+		return v;
+	}
 	for (int i = 0; i < length; i++)
 	{
 		this->vec[i] += other.vec[i];
@@ -79,4 +103,6 @@ Vector::Vector(int n)
 
 Vector::~Vector()
 {
+	if (vec != NULL)
+		delete[] vec;
 }
