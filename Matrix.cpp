@@ -421,11 +421,13 @@ Matrix::Matrix(int nrows, int ncols, int value)
 
 Matrix::~Matrix()
 {
-	if (mat == NULL)
+	if (mat != NULL)
 	{
 		for (int i = 0; i < nrows; i++)
 		{
 			delete[] mat[i];
 		}
+		delete[] mat;
 	}
+
 }

@@ -9,6 +9,7 @@ public:
 	int Length();
 	void input();
 	void print();
+	Vector addVector(const Vector& other);
 	Vector operator+(const Vector& other);
 	Vector& operator+=(const Vector& other);
 	Vector operator*(const double& alpha);
