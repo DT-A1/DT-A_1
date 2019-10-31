@@ -15,13 +15,14 @@ public:
 	Matrix findEchelonForm(); //Tìm ma trận bậc thang
 	Matrix findReducedEchelonForm(); //Tìm ma trận bậc thang rút gọn
 	double findDeterminant(); //Tìm định thức của ma trận
-	Matrix submatrix(int row, int col); //Trả về ma trận đã bỏ đi dòng và cột nhận vào
+	//Matrix submatrix(int row, int col); //Trả về ma trận đã bỏ đi dòng và cột nhận vào
 	int findRank(); //Tìm hạng của ma trận
 	Matrix multiplyMatrix(Matrix other); //Nhân với ma trận khác
 	bool isRevertible(); //Kiểm tra tính khả nghịch
 	Matrix findReverse(); //Tìm ma trận khả nghịch
 	static void solveLinearEquation();
 	double* operator[](int i);
+	Matrix& operator=(const Matrix& matrix);
 private:
 	bool isZeroRow(int row); //Kiểm tra dòng row có phải dòng không hay không
 	int leadingEntryPos(int row); //Vị trí của phần tử khác 0 đầu tiên của dòng
