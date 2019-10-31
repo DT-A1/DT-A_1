@@ -88,6 +88,17 @@ Vector& Vector::operator*=(const double& alpha)
 
 	return *this;
 }
+Vector& Vector::operator=(const Vector& v)
+{
+	if (this->vec != NULL) delete[] this->vec;
+	this->length = v.length;
+	this->vec = new double[this->length];
+	for (int i = 0; i < this->length; i++)
+	{
+		this->vec[i] = v.vec[i];
+	}
+	return *this;
+}
 
 Vector::Vector()
 {
@@ -99,7 +110,15 @@ Vector::Vector(int n)
 	length = n;
 	vec = new double[length];
 }
-
+Vector::Vector(const Vector& v)
+{
+	this->length = v.length;
+	this->vec = new double[this->length];
+	for (int i = 0; i < this->length; i++)
+	{
+		this->vec[i] = v.vec[i];
+	}
+}
 
 Vector::~Vector()
 {
