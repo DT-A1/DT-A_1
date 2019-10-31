@@ -7,9 +7,9 @@ using namespace std;
 
 void Matrix::input()
 {
-	cout << "Enter number of rows: ";
+	cout << "Nhap vao so dong: ";
 	cin >> nrows;
-	cout << "Enter number of colunms: ";
+	cout << "Nhap vao so cot: ";
 	cin >> ncols;
 	mat = new double*[nrows];
 	for (int i = 0; i < nrows; i++)
@@ -17,7 +17,7 @@ void Matrix::input()
 		mat[i] = new double[ncols];
 		for (int j = 0; j < ncols; j++)
 		{
-			cout << "Enter element [" << i << "][" << j << "]: ";
+			cout << "Nhap vao phan tu [" << i << "][" << j << "]: ";
 			cin >> mat[i][j];
 		}
 	}
@@ -28,6 +28,7 @@ void Matrix::inputEquations()
 	cin >> nrows;
 	cout << "Nhap so an: ";
 	cin >> ncols;
+	cout << "He phuong trinh co dang: " << endl;
 	for (int i = 0; i < nrows; i++)
 	{
 		for (int j = 0; j < ncols; j++)
@@ -38,7 +39,7 @@ void Matrix::inputEquations()
 		cout << "= b" << i + 1 << endl;
 	}
 	mat = new double*[nrows];
-	cout << "Nhap vao dang ma tran hoa của he phuong trinh: " << endl;
+	cout << "Nhap vao cac he so cua he phuong trinh: " << endl;
 	for (int i = 0; i < nrows; i++)
 	{
 		mat[i] = new double[ncols + 1];
@@ -195,25 +196,30 @@ double Matrix::findDeterminant()
 			ans *= matrix.mat[i][i]; //det của ma trận bậc thang bằng tích các phần tử trên đường chéo chính
 		return ans;
 	}
-	else cout << "Khong the tinh dinh thuc! Phai la ma tran vuong!" << endl;
-}
-Matrix Matrix::submatrix(int row, int col) {
-	Matrix b(nrows - 1, ncols - 1, 0);
-	int h = 0;
-	int k = 0;
-	for (int i = 0; i < nrows; i++)
+	else
 	{
-		if (i == row) continue;
-		for (int j = 0; j < ncols; j++)
-		{
-			if (j == col) continue;
-			b.mat[k][h++] = this->mat[i][j];
-		}
-		k++;
-		h = 0;
+		cout << "\nKhong the tinh dinh thuc! Phai la ma tran vuong!" << endl;
+		return NULL;
 	}
-	return b;
 }
+//Matrix Matrix::submatrix(int row, int col)
+//{
+//	Matrix b(nrows - 1, ncols - 1, 0);
+//	int h = 0;
+//	int k = 0;
+//	for (int i = 0; i < nrows; i++)
+//	{
+//		if (i == row) continue;
+//		for (int j = 0; j < ncols; j++)
+//		{
+//			if (j == col) continue;
+//			b.mat[k][h++] = this->mat[i][j];
+//		}
+//		k++;
+//		h = 0;
+//	}
+//	return b;
+//}
 int Matrix::findRank()
 {
 	Matrix b = findEchelonForm();
@@ -276,7 +282,6 @@ Matrix Matrix::findReverse()
 	{
 		Matrix matrix = *this;
 		Matrix unit(nrows, ncols);
-		//int flag = 0; //flag = 1 nếu các phần tử cùng cột bên dưới mat[i][j] đều bằng 0, kể cả mat[i][j]
 		for (int i = 0, j = 0; i < nrows && j < ncols; i++, j++)
 		{
 			if (matrix.mat[i][j] == 0) //Tìm dòng có phần tử ở cột i khác 0 để swap 2 dòng
@@ -291,14 +296,7 @@ Matrix Matrix::findReverse()
 						break;
 					}
 				}
-				//if (k >= nrows) flag = 1;
 			}
-			/*if (flag == 1)
-			{
-				--i;
-				flag = 0;
-				continue;
-			}*/
 			unit.multiplyRow(1 / matrix.mat[i][j], i);
 			matrix.multiplyRow(1 / matrix.mat[i][j], i);  //Chia dòng i cho 1/mat[i][j] để mat[i][j] = 1
 			for (int h = i + 1; h < nrows; h++)  //Biến đổi các dòng bên dưới dòng i để các phần tử dưới cột j đều bằng 0
@@ -320,7 +318,8 @@ Matrix Matrix::findReverse()
 	else
 	{
 		cout << "Ma tran khong kha ngich!" << endl;
-		return *this;
+		Matrix a(0, 0);
+		return a;
 	}
 }
 void Matrix::solveLinearEquation()
@@ -334,12 +333,16 @@ void Matrix::solveLinearEquation()
 	{
 		if (matrix.isZeroRow(i))  //Nếu có 1 dòng (0, 0, 0, ..., 0) thì hệ có vô số nghiệm
 		{
-			cout << "Infinite soluntion." << endl;
-			return;
+			if (i <= matrix.ncols - 2)
+			{
+				cout << "He phuong trinh co vo so nghiem." << endl;
+				return;
+			}
+			else continue;
 		}
 		if (matrix.leadingEntryPos(i) == (matrix.ncols - 1)) //Nếu có 1 dòng (0, 0, ..., 0, a) (a!=0) thì hệ vô nghiệm
 		{
-			cout << "No solution." << endl;
+			cout << "He phuong trinh vo ngiem." << endl;
 			return;
 		}
 		ans[numSol] = matrix.mat[i][matrix.ncols - 1];  //Nếu 2 trường hợp trên không xảy ra, hệ có nghiệm duy nhất
@@ -347,9 +350,9 @@ void Matrix::solveLinearEquation()
 		{
 			ans[numSol] -= (matrix.mat[i][j] * ans[j]);
 		}
-		ans[numSol] /= matrix.mat[i][numSol];
 		numSol--;
 	}
+	cout << "Phuong trinh co nghiem duy nhat: " << endl;
 	for (int i = 0; i <= matrix.ncols - 2; i++)
 	{
 		cout << "x" << i + 1 << " = " << ans[i] << endl;
@@ -359,6 +362,29 @@ void Matrix::solveLinearEquation()
 double* Matrix::operator[](int i)
 {
 	if (i < nrows) return mat[i];
+}
+Matrix& Matrix::operator=(const Matrix& matrix)
+{
+	if (this->mat != NULL)
+	{
+		for (int i = 0; i < nrows; i++)
+		{
+			delete[] mat[i];
+		}
+		delete[] mat;
+	}
+	this->nrows = matrix.nrows;
+	this->ncols = matrix.ncols;
+	this->mat = new double*[this->nrows];
+	for (int i = 0; i < this->nrows; i++)
+	{
+		this->mat[i] = new double[ncols];
+		for (int j = 0; j < this->ncols; j++)
+		{
+			this->mat[i][j] = matrix.mat[i][j];
+		}
+	}
+	return *this;
 }
 
 Matrix::Matrix(int nrows, int ncols)
