@@ -1,6 +1,7 @@
 ﻿#include "General.h"
 #include "Vector.h"
 #include "Matrix.h"
+#include <iomanip>
 
 void Menu_Program(int& i)
 {
@@ -85,24 +86,55 @@ int main()
 			{
 				if (n_matrix == 1)
 				{
+					cout << "\n\tTinh dinh thuc cua ma tran: " << endl;
 					Matrix m;
 					cout << "\nNhap vao ma tran:\n";
 					m.input();
 					cout << "Dinh thuc cua ma tran la: " << m.findDeterminant() << endl;
 				}
+				if (n_matrix == 2)
+				{
+					cout << "\n\tTim ma tran nghich dao: " << endl;
+					Matrix m;
+					cout << "\nNhap vao ma tran:\n";
+					m.input();
+					cout << "\nMa tran nghich dao la:\n";
+					m.findReverse().print();
+				}
 				if (n_matrix == 3)
 				{
+					cout << "\n\tTinh tich hai ma tran: " << endl;
 					Matrix m1, m2;
-					cout << "\nNhap vao ma tran thu nhat:\n";
+					cout << "\nNhap vao ma tran thu nhat:" << endl;
 					m1.input();
-					cout << "\nNhap vao ma tran thu hai:\n";
+					cout << "\nNhap vao ma tran thu hai:" << endl;
 					m2.input();
 					cout << "\nTich 2 ma tran la: \n";
 					m1.multiplyMatrix(m2).print();
 				}
+				if (n_matrix == 4)
+				{
+					cout << "\n\tTim hang cua ma tran: " << endl;
+					Matrix m;
+					cout << "\nNhap vao ma tran:" << endl;
+					m.input(); 
+					cout << "\nHang cua ma tran: " << m.findRank() << endl;
+				}
+				if (n_matrix == 5)
+				{
+					cout << "\n\tGiai he phuong trinh tuyen tinh:" << endl;
+					Matrix::solveLinearEquation();
+				}
+				
 				cout << "-------------------------------------------------------" << endl;
 				cout << "\tSo de thuc hien yeu cau tren ma tran la: "; cin >> n_matrix;
 			}
+		}
+		if (i == 4)
+		{
+			cout << "\nThanh vien:" << endl;
+			cout << "Ho Hoang Viet Tien - MSSV: 18120689" << endl;
+			cout << "Nguyen Hoang Trung - MSSV: 18120623" << endl;
 		}
 		Menu_Program(i);
 	}
