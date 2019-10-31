@@ -14,8 +14,10 @@ public:
 	Vector& operator+=(const Vector& other);
 	Vector operator*(const double& alpha);
 	Vector& operator*=(const double& alpha);
+	Vector& operator=(const Vector& v);
 	Vector();
 	Vector(int n);
+	Vector(const Vector& v);
 	~Vector();
 };
 
