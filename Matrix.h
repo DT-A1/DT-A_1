@@ -17,7 +17,7 @@ public:
 	double findDeterminant(); //Tìm định thức của ma trận
 	//Matrix submatrix(int row, int col); //Trả về ma trận đã bỏ đi dòng và cột nhận vào
 	int findRank(); //Tìm hạng của ma trận
-	Matrix multiplyMatrix(Matrix other); //Nhân với ma trận khác
+	Matrix multiplyMatrix(Matrix &other); //Nhân với ma trận khác
 	bool isRevertible(); //Kiểm tra tính khả nghịch
 	Matrix findReverse(); //Tìm ma trận khả nghịch
 	static void solveLinearEquation();
