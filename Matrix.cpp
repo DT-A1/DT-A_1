@@ -251,7 +251,7 @@ int Matrix::leadingEntryPos(int row)
 	}
 	return ncols;
 }
-Matrix Matrix::multiplyMatrix(Matrix other)
+Matrix Matrix::multiplyMatrix(Matrix &other)
 {
 	if (this->ncols == other.nrows) //Điều kiện để nhân hai ma trận
 	{
