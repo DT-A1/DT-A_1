@@ -24,21 +24,6 @@ void Vector::print()
 	cout << endl;
 }
 
-Vector Vector::addVector(const Vector& other)
-{
-	if (other.length != this->length)
-	{
-		Vector v(0);
-		cout << "\nDo dai 2 vector khac nhau nen khong the cong\n";
-		return v;
-	}
-	Vector ans;
-	for (int i = 0; i < length; i++)
-	{
-		ans.vec[i] = this->vec[i] + other.vec[i];
-	}
-	return ans;
-}
 Vector Vector::operator+(const Vector& other)
 {
 	if (other.length != this->length)
